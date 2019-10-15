@@ -10,9 +10,7 @@ Instructions for installing airship+tungstenfabric using the Regional Controller
 2. Clone the *tf* repository using
 
    ~~~
-
-     #git clone https://gerrit.akraino.org/r/tf.git
-     git clone https://github.com/gleb108/akraino-tf.git
+     git clone https://gerrit.akraino.org/r/nc/tf
    ~~~  
 
 3. Regional Controller goes to the remote node by ssh, so it needs ssh private key.
