@@ -104,4 +104,3 @@ Instructions for installing airship+tungstenfabric using the Regional Controller
     workflow, as well as the current status of the workflow. The status will be WORKFLOW
     while the workflow is running, and wil change to ACTIVE if the workflow completes
     succesfully, or FAILED, if the workflow fails.
-
