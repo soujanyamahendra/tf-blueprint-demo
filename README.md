@@ -10,7 +10,7 @@ Instructions for installing airship+tungstenfabric using the Regional Controller
 2. Clone the *tf* repository using
 
    ~~~
-     git clone https://github.com/atsgen/tf-blueprint-demo.git
+   git clone https://github.com/atsgen/tf-blueprint-demo.git
    ~~~
 
 3. Regional Controller goes to the remote node by ssh, so it needs ssh private key.
@@ -19,13 +19,13 @@ Instructions for installing airship+tungstenfabric using the Regional Controller
    Ssh public key must be writen to the .ssh/authorized_keys on remote node.
    Hint: python provisional web server can be used on the localhost. Use python3 -m http.server
    ~~~
-      # assumes to be executed in the cloned directory tf-blueprint-demo
-      mkdir share
-      scp $HOME/.ssh/id_rsa share/ssh_key.pem
-      scp deploy.sh share/
-      pushd share
-      python3 -m http.server &
-      popd
+   # assumes to be executed in the cloned directory tf-blueprint-demo
+   mkdir share
+   scp $HOME/.ssh/id_rsa share/ssh_key.pem
+   scp deploy.sh share/
+   pushd share
+   python3 -m http.server &
+   popd
    ~~~
 
 4. Setup Environment variables
@@ -33,87 +33,87 @@ Instructions for installing airship+tungstenfabric using the Regional Controller
    Export all the environment variables
       - define the ip addresses for nodes
       ~~~
-         export RC_HOST=192.168.22.24
-         export NODE=192.168.22.18
+      export RC_HOST=192.168.22.24
+      export NODE=192.168.22.18
       ~~~
       - web server baseurl
       ~~~
-         export BASE_URL=http://192.168.22.24:8000
+      export BASE_URL=http://192.168.22.24:8000
       ~~~
    rest of the fields can be exported default from *setup-env.sh*
    ~~~
-      source setup-env.sh
+   source setup-env.sh
    ~~~
 
 5. Generate yaml files from templates
 
    ~~~
-      cat objects.yaml.env | envsubst > objects.yaml
-      cat TF_blueprint.yaml.env | envsubst > TF_blueprint.yaml
+   cat objects.yaml.env | envsubst > objects.yaml
+   cat TF_blueprint.yaml.env | envsubst > TF_blueprint.yaml
    ~~~
 
 6. Clone the *api-server* repository.  This provides the CLI tools used to interact with the
    Regional Controller.  Add the scripts from this repository to your PATH:
 
    ~~~
-     git clone https://gerrit.akraino.org/r/regional_controller/api-server
-     export PATH=$PATH:$PWD/api-server/scripts
+   git clone https://gerrit.akraino.org/r/regional_controller/api-server
+   export PATH=$PATH:$PWD/api-server/scripts
    ~~~
 
 7. Load the objects defined in *objects.yaml* into the Regional Controller using:
 
    ~~~
-     rc_loaddata -H $RC_HOST -u $RC_USER -p $RC_PW -A objects.yaml
+   rc_loaddata -H $RC_HOST -u $RC_USER -p $RC_PW -A objects.yaml
    ~~~
 
 8. Load the blueprint into the Regional Controller using:
 
    ~~~
-     rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW blueprint create TF_blueprint.yaml
+   rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW blueprint create TF_blueprint.yaml
    ~~~
 
 9. Get the UUIDs of the edgesite and the blueprint from the Regional Controller using:
 
-    ~~~
-      rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW blueprint list
-      rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW edgesite list
-    ~~~
+   ~~~
+   rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW blueprint list
+   rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW edgesite list
+   ~~~
 
-    These are needed to create the POD.
-    Set and export them as the environment variables ESID and BPID.
-    or alternatively can use following commands to do that for you
+   These are needed to create the POD.
+   Set and export them as the environment variables ESID and BPID.
+   or alternatively can use following commands to do that for you
 
-    ~~~
-      export ESID=$(rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW edgesite list | awk 'NR==3 {print $1}')
-      export BPID=$(rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW blueprint list | awk 'NR==3 {print $1}')
-      echo "ESID = $ESID"
-      echo "BPID = $BPID"
-    ~~~
+   ~~~
+   export ESID=$(rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW edgesite list | awk 'NR==3 {print $1}')
+   export BPID=$(rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW blueprint list | awk 'NR==3 {print $1}')
+   echo "ESID = $ESID"
+   echo "BPID = $BPID"
+   ~~~
 
 10. Generate POD.yaml
 
    ~~~
-      cat POD.yaml.env | envsubst > POD.yaml
+   cat POD.yaml.env | envsubst > POD.yaml
    ~~~
 
 11. Create the POD using:
 
-    ~~~
-       rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW pod create POD.yaml
-    ~~~
+   ~~~
+   rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW pod create POD.yaml
+   ~~~
 
-    This will cause the POD to be created, and the *deploy.sh* workflow script to be
-    run on the Regional Controller's workflow engine. This in turn will login to remote node by ssh
-    and install airship+ tungstenfabric demo on it.
+   This will cause the POD to be created, and the *deploy.sh* workflow script to be
+   run on the Regional Controller's workflow engine. This in turn will login to remote node by ssh
+   and install airship+ tungstenfabric demo on it.
 
 12. If you want to monitor ongoing progess of the installation, you can issue periodic calls
     to monitor the POD with:
 
-    ~~~
-          rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW pod show $PODID
-    ~~~
+   ~~~
+   rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW pod show $PODID
+   ~~~
 
-    where $PODID is the UUID of the POD. This will show all the messages logged by the
-    workflow, as well as the current status of the workflow. The status will be WORKFLOW
-    while the workflow is running, and wil change to ACTIVE if the workflow completes
-    succesfully, or FAILED, if the workflow fails.
+   where $PODID is the UUID of the POD. This will show all the messages logged by the
+   workflow, as well as the current status of the workflow. The status will be WORKFLOW
+   while the workflow is running, and wil change to ACTIVE if the workflow completes
+   succesfully, or FAILED, if the workflow fails.
