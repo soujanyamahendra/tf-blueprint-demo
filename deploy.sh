@@ -20,7 +20,7 @@ REPO_BRANCH=$(yaml ${INPUT} "['repo_branch']")
 cat <<EOF >start.sh
 #!/bin/bash
 
-git clone ${REPO_URL} --branch ${REPO_BRANCH}
+git clone ${REPO_URL} --branch ${REPO_BRANCH} treasuremap
 cd treasuremap/tools/deployment/aiab/
 sudo ./airship-in-a-bottle.sh | tee /tmp/airship-in-a-bottle.sh.output.log
 EOF
