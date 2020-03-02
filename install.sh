@@ -1,13 +1,14 @@
 #!/bin/bash
 set -ex
-mkdir $(dirname $0)/share
-scp $HOME/.ssh/id_rsa $(dirname $0)/share/ssh_key.pem
-scp deploy.sh $(dirname $0)/share/
-source $(dirname $0)/setup-env.sh
+export parent_dir=$(dirname $0)
+mkdir $parent_dir/share
+scp $HOME/.ssh/id_rsa $parent_dir/share/ssh_key.pem
+scp deploy.sh $parent_dir/share/
 export RC_HOST=192.168.22.24
 export NODE=192.168.22.18
 export BASE_URL=http://192.168.22.24:8000
-pushd $(dirname $0)/share
+source $parent_dir/setup-env.sh
+pushd $parent_dir/share
 python3 -m http.server &
 popd
 cat objects.yaml.env | envsubst > objects.yaml
