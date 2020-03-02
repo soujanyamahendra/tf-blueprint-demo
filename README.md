@@ -10,7 +10,7 @@ Instructions for installing airship+tungstenfabric using the Regional Controller
 2. Clone the *tf* repository using
 
    ~~~
-     git clone https://gerrit.akraino.org/r/nc/tf
+     git clone https://github.com/atsgen/tf-blueprint-demo.git
    ~~~
 
 3. Regional Controller goes to the remote node by ssh, so it needs ssh private key.
@@ -18,25 +18,36 @@ Instructions for installing airship+tungstenfabric using the Regional Controller
    Put ssh private key and script deploy.sh on some web server.
    Ssh public key must be writen to the .ssh/authorized_keys on remote node.
    Hint: python provisional web server can be used on the localhost. Use python3 -m http.server
-
-4. Edit the file *setup-env.sh*.
-
-   Update all the environment variables  define the ip addresses nodes, web server baseurl, etc
-   Define where the Regional Controller is located, as well as the login/password to use
-   (the login/password shown here are the built-in values and do not need to be changed
-   if you have not changed them on the Regional Controller):
-
+   ~~~
+      # assumes to be executed in the cloned directory tf-blueprint-demo
+      mkdir share
+      scp $HOME/.ssh/id_rsa share/ssh_key.pem
+      scp deploy.sh share/
+      pushd share
+      python3 -m http.server &
+      popd
    ~~~
 
-     export RC_HOST=<IP or DNS name of Regional Controller>
-     export USER=admin
-     export PW=admin123
+4. Setup Environment variables
+
+   Export all the environment variables
+      - define the ip addresses for nodes
+      ~~~
+         export RC_HOST=192.168.22.24
+         export NODE=192.168.22.18
+      ~~~
+      - web server baseurl
+      ~~~
+         export BASE_URL=http://192.168.22.24:8000
+      ~~~
+   rest of the fields can be exported default from *setup-env.sh*
+   ~~~
+      source setup-env.sh
    ~~~
 
 5. Generate yaml files from templates
 
    ~~~
-      source setup-env.sh
       cat objects.yaml.env | envsubst > objects.yaml
       cat TF_blueprint.yaml.env | envsubst > TF_blueprint.yaml
    ~~~
@@ -68,13 +79,15 @@ Instructions for installing airship+tungstenfabric using the Regional Controller
       rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW edgesite list
     ~~~
 
-    These are needed to create the POD.  You will also see the UUID of the Blueprint displayed
-    when you create the Blueprint in step 8 (it is at the tail end of the URL that is printed).
+    These are needed to create the POD.
     Set and export them as the environment variables ESID and BPID.
+    or alternatively can use following commands to do that for you
 
     ~~~
-      export ESID=<UUID of edgesite in the RC>
-      export BPID=<UUID of blueprint in the RC>
+      export ESID=$(rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW edgesite list | awk 'NR==3 {print $1}')
+      export BPID=$(rc_cli -H $RC_HOST -u $RC_USER -p $RC_PW blueprint list | awk 'NR==3 {print $1}')
+      echo "ESID = $ESID"
+      echo "BPID = $BPID"
     ~~~
 
 10. Generate POD.yaml
