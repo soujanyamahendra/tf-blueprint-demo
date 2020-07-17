@@ -18,6 +18,6 @@ export SSH_KEY=${SSH_KEY:-ssh_key.pem}
 export BASE_URL=${BASE_URL:-http://172.31.43.214:8000}
 
 #repo URL and branch for airship with tungstenfabric
-export REPO_URL=https://github.com/atsgen/treasuremap
+export REPO_URL=https://github.com/soujanyamahendra/treasuremap
 export REPO_BRANCH=master
 
